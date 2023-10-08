@@ -21,8 +21,8 @@ job "whoami" {
 
       tags = [
         "traefik.enable=true",
-        # "traefik.http.routers.whoami-demo.entrypoints=web",
-        # "traefik.http.routers.whoami-demo.rule=Host(`whoami.nomad.localhost`)",
+        "traefik.http.routers.whoami-demo.entrypoints=http,https",
+        "traefik.http.routers.whoami-demo.rule=Host(`nomad.thekevinwang.com`)",
         "traefik.http.routers.whoami-demo.rule=Path(`/whoami`)",
         # "traefik.http.routers.whoami-demo.service=whoami-demo",
         # "traefik.http.services.whoami-demo.loadbalancer.server.scheme=https",
@@ -42,9 +42,9 @@ job "whoami" {
       driver = "docker"
 
       config {
-        network_mode = "bridge"
-        image        = "traefik/whoami"
-        ports        = ["http"]
+        # network_mode = "bridge"
+        image = "traefik/whoami"
+        ports = ["http"]
       }
     }
   }

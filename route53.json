@@ -1,0 +1,32 @@
+{
+  "Comment": "optional comment about the changes in this change batch request",
+  "Changes": [
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "__FIXME__",
+        "Type": "A",
+        "TTL": 300,
+        "ResourceRecords": [{ "Value": "__FIXME__" }]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "__FIXME__",
+        "Type": "A",
+        "TTL": 300,
+        "ResourceRecords": [{ "Value": "__FIXME__" }]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "__FIXME__",
+        "Type": "A",
+        "TTL": 300,
+        "ResourceRecords": [{ "Value": "__FIXME__" }]
+      }
+    }
+  ]
+}

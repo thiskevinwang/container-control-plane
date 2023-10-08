@@ -9,28 +9,19 @@ packer {
 
 # https://developer.hashicorp.com/packer/plugins/builders/amazon/ebs#tag-example
 source "amazon-ebs" "basic" {
-  ami_name      = "packer-x86_64"
-  source_ami    = "ami-0aa7d40eeae50c9a9" # (64-bit (x86))
-  instance_type = "t2.small"
+  ami_name      = "nomad-x86_64"
+  source_ami    = "ami-03a6eaae9938c858c" # Amazon Linux 2023 AMI 2023.2.20230920.1 x86_64 HVM kernel-6.1
+  instance_type = "t2.medium"
   region        = "us-east-1"
   ssh_username  = "ec2-user"
 }
 
 
 build {
-  name = "packer-arm-build"
+  name = "packer-build"
   sources = [
     "source.amazon-ebs.basic"
   ]
-
-
-  # install nixpacks
-  provisioner "shell" {
-    inline = [
-      "curl -sSL https://nixpacks.com/install.sh | sudo bash",
-      "nixpacks --version"
-    ]
-  }
 
   # install junk
   provisioner "shell" {
@@ -40,18 +31,46 @@ build {
     ]
   }
 
-  # Install nomad 
+  # multiline script in packer - https://stackoverflow.com/a/68216479
+  # sudo cat not working - https://stackoverflow.com/a/18836896
+  provisioner "shell" {
+    inline = [
+      "sudo mkdir -p /etc/nomad.d/",
+      <<EOT
+sudo bash -c 'cat <<EOF > /etc/nomad.d/conf.hcl
+bind_addr = "0.0.0.0" 
+data_dir  = "/opt/nomad"
+plugin_dir = "/opt/nomad/plugins"
+
+acl {
+  enabled = true
+}
+
+client {
+  enabled = true
+}
+
+server {
+  enabled          = true
+  bootstrap_expect = 1
+}
+EOF'
+EOT
+    ]
+  }
+
+  # Install nomad & run it
   provisioner "shell" {
     inline = [
       "sudo yum -y install yum-utils",
       "sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo",
       "sudo yum -y install nomad",
-      "sudo systemctl enable nomad",
-      "sudo systemctl start nomad"
+      "sudo systemctl enable nomad.service",
+      "sudo systemctl start nomad.service"
     ]
   }
 
-  # Use provisioner to install docker desktop
+  # Install docker & run it; This will be a driver that nomad will use
   provisioner "shell" {
     inline = [
       "sudo yum update -y",

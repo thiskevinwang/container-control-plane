@@ -1,16 +1,10 @@
 # nomad run ./traefik.nomad.hcl
-job "traefik-docker" {
+job "traefik" {
   datacenters = ["dc1"]
   type        = "service"
 
   group "traefik" {
     count = 1
-
-    # volume "docker-events" {
-    #   type      = "host"
-    #   read_only = true
-    #   source    = "docker-events"
-    # }
 
     network {
       mode = "host"
@@ -21,9 +15,18 @@ job "traefik-docker" {
         static = 80
       }
 
+      port "https" {
+        static = 443
+      }
+
       port "traefik" {
         static = 8080
         to     = 8080
+      }
+
+      port "db" {
+        static = 5432
+        to     = 5432
       }
     }
 
@@ -37,52 +40,46 @@ job "traefik-docker" {
     task "server" {
       driver = "docker"
       config {
-        network_mode = "bridge"
-        image        = "traefik:v2.10"
-        ports        = ["http", "traefik"]
+        # network_mode = "bridge"
+        image = "traefik:v3.0"
+        ports = [
+          "http",
+          "https",
+          "traefik",
+          "db"
+        ]
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
         ]
       }
 
-      # volume_mount {
-      #   volume      = "docker-events"
-      #   destination = "/var/run/docker.sock"
-      # }
-
       # https://doc.traefik.io/traefik/getting-started/configuration-overview/#configuration-file
       template {
-        data = <<EOH
-# [entryPoints]
-#   [entryPoints.http]
-#     address = ":{{ env "NOMAD_PORT_http" }}"
-#   [entryPoints.traefik]
-#     address = ":{{ env "NOMAD_PORT_admin" }}"
-
-# [entryPoints]
-#   [entryPoints.web]
-#     address = ":80"
-#   [entryPoints.websecure]
-#     address = ":443"
-#   [entryPoints.admin]
-#     address = ":9000"
+        data = <<EOT
+[entryPoints]
+  [entryPoints.http]
+    address = ":80"
+  [entryPoints.https]
+    address = ":443"
+  [entryPoints.traefik]
+    address = ":8080"
+  [entryPoints.db]
+    address = ":5432"
 
 [api]
   dashboard = true
-  insecure  = true
+  insecure = true
   debug = true
+
 [providers.nomad]
   refreshInterval = "5s"
   [providers.nomad.endpoint]
-    # address = "{{ env "NOMAD_ADDR" }}"
-    address = "http://host.docker.internal:4646"
-    # address = "https://0ecb-2600-4041-5878-d300-590a-1bd6-fb5a-388b.ngrok-free.app"
+    address = "http://{{ env "attr.unique.network.ip-address" }}:4646"
+    token   = ""
 
-# [http.services]
-#   [http.services.whoami-demo.loadBalancer]
-#     [[http.services.whoami-demo.loadBalancer.servers]]
-#       url = "http://host.docker.internal/"
-EOH
+[log]
+  level = "DEBUG"
+EOT
 
         destination = "local/traefik.toml"
       }
