@@ -1,4 +1,9 @@
-job "postgres-2" {
+variable "hostname" {
+  description = "Hostname to detect and route to the postgres service"
+  type        = string
+}
+
+job "postgres" {
   datacenters = ["dc1"]
 
   type = "service"
@@ -23,7 +28,7 @@ job "postgres-2" {
         "traefik.enable=true",
         "traefik.tcp.routers.route_db.rule=HostSNI(`*`)",
         "traefik.tcp.routers.route_db.entryPoints=db",
-        "traefik.http.routers.whoami-demo.rule=Host(`postgres-2.thekevinwang.com`)",
+        "traefik.http.routers.whoami-demo.rule=Host(`${var.hostname}`)",
         "traefik.http.services.db.loadbalancer.server.scheme=postgres",
       ]
     }
