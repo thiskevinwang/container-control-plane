@@ -1,4 +1,11 @@
-# nomad run ./traefik.nomad.hcl
+# https://developer.hashicorp.com/nomad/docs/job-specification/hcl2/variables#assigning-values-to-job-variables
+
+# export NOMAD_VAR_token_for_traefik=...
+# nomad run ./nomad/traefik.nomad.hcl
+variable "token_for_traefik" {
+  type = string
+}
+
 job "traefik" {
   datacenters = ["dc1"]
   type        = "service"
@@ -22,6 +29,11 @@ job "traefik" {
       port "traefik" {
         static = 8080
         to     = 8080
+      }
+
+      port "prometheus" {
+        static = 9090
+        to     = 9090
       }
 
       port "db" {
@@ -53,7 +65,12 @@ job "traefik" {
         ]
       }
 
+      env {
+        I_GUESS_THIS_IS_NOT_THE_WORST = var.token_for_traefik
+      }
+
       # https://doc.traefik.io/traefik/getting-started/configuration-overview/#configuration-file
+      # https://developer.hashicorp.com/nomad/docs/job-specification/template
       template {
         data = <<EOT
 [entryPoints]
@@ -65,6 +82,12 @@ job "traefik" {
     address = ":8080"
   [entryPoints.db]
     address = ":5432"
+  [entryPoints.metrics]
+    address = ":8082"
+
+[metrics]
+  [metrics.prometheus]
+    entryPoint = "metrics"
 
 [api]
   dashboard = true
@@ -75,7 +98,7 @@ job "traefik" {
   refreshInterval = "5s"
   [providers.nomad.endpoint]
     address = "http://{{ env "attr.unique.network.ip-address" }}:4646"
-    token   = ""
+    token   = "{{ env "I_GUESS_THIS_IS_NOT_THE_WORST" }}"
 
 [log]
   level = "DEBUG"
