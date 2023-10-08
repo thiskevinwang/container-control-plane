@@ -28,8 +28,16 @@ build {
     inline = [
       "sudo yum -y install zsh",
       "sudo yum -y install git",
+      "sudo yum -y install util-linux-user",
+      "sudo chsh -s $(which zsh) $(whoami)",
+      # "sudo git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting",
+      # "sudo git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions",
+      # "sudo touch ~/.zshrc",
+      # "echo 'plugins=(git zsh-autosuggestions zsh-syntax-highlighting)' >> ~/.zshrc",
     ]
   }
+
+
 
   # multiline script in packer - https://stackoverflow.com/a/68216479
   # sudo cat not working - https://stackoverflow.com/a/18836896

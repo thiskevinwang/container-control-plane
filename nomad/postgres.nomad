@@ -28,7 +28,7 @@ job "postgres" {
         "traefik.enable=true",
         "traefik.tcp.routers.route_db.rule=HostSNI(`*`)",
         "traefik.tcp.routers.route_db.entryPoints=db",
-        "traefik.http.routers.whoami-demo.rule=Host(`${var.hostname}`)",
+        "traefik.http.routers.databases.rule=Host(`${var.hostname}`)",
         "traefik.http.services.db.loadbalancer.server.scheme=postgres",
       ]
     }

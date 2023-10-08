@@ -31,15 +31,16 @@ job "traefik" {
         to     = 8080
       }
 
-      port "prometheus" {
-        static = 9090
-        to     = 9090
-      }
 
       port "db" {
         static = 5432
         to     = 5432
       }
+
+      // port "prometheus" {
+      //   static = 9090
+      //   to     = 9090
+      // }
     }
 
 
@@ -58,7 +59,7 @@ job "traefik" {
           "http",
           "https",
           "traefik",
-          "db"
+          "db",
         ]
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
@@ -82,17 +83,20 @@ job "traefik" {
     address = ":8080"
   [entryPoints.db]
     address = ":5432"
-  [entryPoints.metrics]
+  [entrypoints.metrics]
     address = ":8082"
 
 [metrics]
   [metrics.prometheus]
-    entryPoint = "metrics"
+    entryPoint       = "metrics" # default is traefik
+    addRoutersLabels = true
+    # manualrouting    = true
 
 [api]
+  # https://doc.traefik.io/traefik/operations/api/#dashboard
   dashboard = true
-  insecure = true
-  debug = true
+  insecure  = true
+  debug     = true
 
 [providers.nomad]
   refreshInterval = "5s"
