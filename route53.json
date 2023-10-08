@@ -4,28 +4,10 @@
     {
       "Action": "UPSERT",
       "ResourceRecordSet": {
-        "Name": "__FIXME__",
+        "Name": "__hostname_maybe__",
         "Type": "A",
         "TTL": 300,
-        "ResourceRecords": [{ "Value": "__FIXME__" }]
-      }
-    },
-    {
-      "Action": "UPSERT",
-      "ResourceRecordSet": {
-        "Name": "__FIXME__",
-        "Type": "A",
-        "TTL": 300,
-        "ResourceRecords": [{ "Value": "__FIXME__" }]
-      }
-    },
-    {
-      "Action": "UPSERT",
-      "ResourceRecordSet": {
-        "Name": "__FIXME__",
-        "Type": "A",
-        "TTL": 300,
-        "ResourceRecords": [{ "Value": "__FIXME__" }]
+        "ResourceRecords": [{ "Value": "__raw_ip_no_scheme__" }]
       }
     }
   ]
