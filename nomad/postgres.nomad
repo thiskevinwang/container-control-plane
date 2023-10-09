@@ -1,6 +1,7 @@
 variable "hostname" {
-  description = "Hostname to detect and route to the postgres service"
+  description = "($NOMAD_VAR_hostname) Hostname to detect and route to the postgres service"
   type        = string
+  default     = "postgres.thekevinwang.com"
 }
 
 job "postgres" {
@@ -26,8 +27,8 @@ job "postgres" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.tcp.routers.route_db.rule=HostSNI(`*`)",
-        "traefik.tcp.routers.route_db.entryPoints=db",
+        "traefik.tcp.routers.databases.rule=HostSNI(`*`)",
+        // "traefik.tcp.routers.databases.entryPoints=db",
         "traefik.http.routers.databases.rule=Host(`${var.hostname}`)",
         "traefik.http.services.db.loadbalancer.server.scheme=postgres",
       ]
