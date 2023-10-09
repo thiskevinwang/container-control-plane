@@ -118,7 +118,8 @@ resource "aws_instance" "nomad-leader" {
 output "nomad_acl_bootstrap_reminder" {
   value       = <<EOT
 # Reminder to bootstrap ACLs on initial launch
-nomad acl bootstrap
+nomad acl bootstrap -json
+export NOMAD_TOKEN=$(nomad acl bootstrap -json | jq -r '.SecretID')
 EOT
   description = "convenience command to bootstrap ACLs"
 }
