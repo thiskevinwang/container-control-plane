@@ -8,7 +8,7 @@
 
 There are three main folders:
 
-- [`/packer`](./packer/) - For infrequently update one AWS AIM
+- [`/packer`](./packer/) - For infrequently updating an AWS AMI
 - [`/terraform`](./terraform/) - For quick spin up and tear down of and EC2 instance, mostly to avoid wasted money.
 - [`/nomad`](./nomad/) - For quick iteration and running of Nomad jobs, assuming a Nomad instance is ready.
 
@@ -34,18 +34,32 @@ terraform -chdir ./terraform apply
 This will create an EC2 instance, and a permissive security group.
 Nomad will already be running.
 
-### Traefik
+### Nomad
+
+#### Traefik
 
 ```bash
 export NOMAD_VAR_token_for_traefik="..."
-nomad run ./nomad/traefik.nomad.hcl
+nomad run ./nomad/traefik.nomad
 ```
 
-### Postgres (optional)
+#### Prometheus
 
 ```bash
-nomad run -var hostname=foobar.thekevinwang.com ./nomad/postgres.nomad.hcl
+nomad run ./nomad/prometheus.nomad
+```
+
+#### Grafana
+
+```bash
+nomad run ./nomad/grafana.nomad
+```
+
+#### Postgres
+
+```bash
+nomad run -var hostname=postgres.thekevinwang.com ./nomad/postgres.nomad
 # or
-export NOMAD_VAR_hostname="foobar.thekevinwang.com"
-nomad run ./nomad/postgres.nomad.hcl
+export NOMAD_VAR_hostname="postgres.thekevinwang.com"
+nomad run ./nomad/postgres.nomad
 ```
