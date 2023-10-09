@@ -16,7 +16,7 @@ job "prometheus" {
       mode = "host"
 
       port "prom" {
-        static = 9090
+        // static = 9090
         to = 9090
       }
     }
@@ -26,24 +26,22 @@ job "prometheus" {
       port     = "prom"
       provider = "nomad"
 
-
-      // - "traefik.http.routers.prometheus.rule=Host(`${PROM_URL}`)"
-      // - "traefik.http.routers.prometheus.service=prometheus"
-      // - "traefik.http.routers.prometheus.middlewares=traefik-auth"
-      // - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.metrics.rule=PathPrefix(`/metrics`)",
+        "traefik.http.routers.prometheus.entrypoints=http,https",
+        "traefik.http.routers.prometheus.rule=Host(`prometheus.thekevinwang.com`)",
+        // "traefik.http.routers.metrics.entryPoints=metrics",
+        // "traefik.http.routers.metrics.rule=PathPrefix(`/metrics`)",
         // "traefik.http.routers.metrics.rule=Host(`foo.bar`)"
         // "traefik.http.routers.metrics.tls=true"
         // "traefik.http.routers.metrics.tls.certResolver=sec"
-        "traefik.http.routers.metrics.service=metrics"
+        // "traefik.http.routers.metrics.service=prometheus"
         // "traefik.http.routers.metrics.middlewares=myauth"
         // "traefik.http.services.metrics.loadbalancer.server.port=8082"
       ]
     }
 
-    task "server" {
+    task "prometheus" {
       env {
       }
 
@@ -60,6 +58,7 @@ job "prometheus" {
       }
 
       template {
+        destination = "local/prometheus.yml"
         data        = <<EOT
 # my global config
 global:
@@ -86,9 +85,10 @@ scrape_configs:
     # metrics_path defaults to '/metrics'
     # scheme defaults to 'http'.
     static_configs:
-      - targets: ["{{ env "attr.unique.network.ip-address" }}:8080"]
+      - targets: [
+          "{{ env "attr.unique.network.ip-address" }}:8080",
+        ]
 EOT
-        destination = "local/prometheus.yml"
       }
     }
   }

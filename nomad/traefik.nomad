@@ -16,31 +16,22 @@ job "traefik" {
     network {
       mode = "host"
 
+      // listen for the folling ports on the host
       port "http" {
-        # to     = 8080 # container port the app runs on
-        # static = 80 # host port to expose
         static = 80
       }
-
       port "https" {
         static = 443
       }
+      port "db" {
+        static = 5432
+      }
 
+      // static port for traefik
       port "traefik" {
         static = 8080
         to     = 8080
       }
-
-
-      port "db" {
-        static = 5432
-        to     = 5432
-      }
-
-      // port "prometheus" {
-      //   static = 9090
-      //   to     = 9090
-      // }
     }
 
 
@@ -53,17 +44,9 @@ job "traefik" {
     task "server" {
       driver = "docker"
       config {
-        # network_mode = "bridge"
         image = "traefik:v3.0"
-        ports = [
-          "http",
-          "https",
-          "traefik",
-          "db",
-        ]
-        volumes = [
-          "local/traefik.toml:/etc/traefik/traefik.toml",
-        ]
+        ports = ["http","https","db","traefik"]
+        volumes = ["local/traefik.toml:/etc/traefik/traefik.toml"]
       }
 
       env {
@@ -73,6 +56,7 @@ job "traefik" {
       # https://doc.traefik.io/traefik/getting-started/configuration-overview/#configuration-file
       # https://developer.hashicorp.com/nomad/docs/job-specification/template
       template {
+        destination = "local/traefik.toml"
         data = <<EOT
 [entryPoints]
   [entryPoints.http]
@@ -83,12 +67,10 @@ job "traefik" {
     address = ":8080"
   [entryPoints.db]
     address = ":5432"
-  [entrypoints.metrics]
-    address = ":8082"
 
 [metrics]
   [metrics.prometheus]
-    entryPoint       = "metrics" # default is traefik
+    entryPoint       = "traefik"
     addRoutersLabels = true
     # manualrouting    = true
 
@@ -108,7 +90,6 @@ job "traefik" {
   level = "DEBUG"
 EOT
 
-        destination = "local/traefik.toml"
       }
     }
   }
