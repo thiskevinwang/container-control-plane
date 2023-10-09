@@ -39,6 +39,15 @@ job "traefik" {
       name     = "traefik-http"
       provider = "nomad"
       port     = "traefik"
+
+      // How to write a rule to route to the dashboard itself
+      // https://community.traefik.io/t/how-to-redirect-to-the-dashboard-from-a-url/4082/6
+      tags = [
+        "traefik.enable=true",
+        "traefik.http.routers.dashboard.entrypoints=http,https",
+        "traefik.http.routers.dashboard.rule=Host(`traefik.thekevinwang.com`)",
+        "traefik.http.routers.dashboard.service=api@internal"
+      ]
     }
 
     task "server" {
