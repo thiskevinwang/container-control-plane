@@ -31,7 +31,7 @@ variable "vpc_id" {
 variable "ami" {
   description = "The AMI output from packer — hardcoded for demonstration purposes"
   type        = string
-  default     = "ami-03f4a15e529cb7391"
+  default     = "ami-0d82e39faee57ab0e"
 }
 
 #############
