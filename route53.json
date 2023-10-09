@@ -4,10 +4,46 @@
     {
       "Action": "UPSERT",
       "ResourceRecordSet": {
-        "Name": "__hostname_maybe__",
+        "Name": "nomad.thekevinwang.com",
         "Type": "A",
         "TTL": 300,
-        "ResourceRecords": [{ "Value": "__raw_ip_no_scheme__" }]
+        "ResourceRecords": [{ "Value": "0.0.0.0" }]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "traefik.thekevinwang.com",
+        "Type": "A",
+        "TTL": 300,
+        "ResourceRecords": [{ "Value": "0.0.0.0" }]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "postgres.thekevinwang.com",
+        "Type": "A",
+        "TTL": 300,
+        "ResourceRecords": [{ "Value": "0.0.0.0" }]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "prometheus.thekevinwang.com",
+        "Type": "A",
+        "TTL": 300,
+        "ResourceRecords": [{ "Value": "0.0.0.0" }]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "grafana.thekevinwang.com",
+        "Type": "A",
+        "TTL": 300,
+        "ResourceRecords": [{ "Value": "0.0.0.0" }]
       }
     }
   ]
