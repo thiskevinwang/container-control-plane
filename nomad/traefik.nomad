@@ -36,7 +36,7 @@ job "traefik" {
 
 
     service {
-      name     = "traefik-http"
+      name     = "traefik-nomad-service"
       provider = "nomad"
       port     = "traefik"
 
@@ -44,17 +44,38 @@ job "traefik" {
       // https://community.traefik.io/t/how-to-redirect-to-the-dashboard-from-a-url/4082/6
       tags = [
         "traefik.enable=true",
+        # route traefik.thekevinwang.com
         "traefik.http.routers.dashboard.entrypoints=http,https",
         "traefik.http.routers.dashboard.rule=Host(`traefik.thekevinwang.com`)",
-        "traefik.http.routers.dashboard.service=api@internal"
+        "traefik.http.routers.dashboard.service=api@internal",
+
+        # route /metrics
+        "traefik.http.routers.metrics.entrypoints=http,https",
+        "traefik.http.routers.metrics.rule=Host(`traefik.thekevinwang.com`) && PathPrefix(`/metrics`)",
+        // Warning: must use one .rule tag.
+        // ❌ "traefik.http.routers.metrics.rule=PathPrefix(`/metrics`)",
+        "traefik.http.routers.metrics.service=prometheus@internal",
+
+        # route nomad.thekevinwang.com
+        "traefik.http.routers.nomad.entrypoints=http,https",
+        "traefik.http.routers.nomad.rule=Host(`nomad.thekevinwang.com`)",
+        "traefik.http.routers.nomad.service=nomad@nomad",
+        "traefik.http.services.nomad.loadbalancer.server.port=4646"
       ]
     }
 
+    # task name is used as a prefix on the host machine's
+    # docker container name. e.g. "server-6a911a47-efef-ef89-2c62-72c6407f3f69"
     task "server" {
       driver = "docker"
       config {
         image = "traefik:v3.0"
-        ports = ["http","https","db","traefik"]
+        ports = [
+          "http",
+          "https",
+          "db",
+          "traefik",
+        ]
         volumes = ["local/traefik.toml:/etc/traefik/traefik.toml"]
       }
 
@@ -81,7 +102,7 @@ job "traefik" {
   [metrics.prometheus]
     entryPoint       = "traefik"
     addRoutersLabels = true
-    # manualrouting    = true
+    manualrouting    = true
 
 [api]
   # https://doc.traefik.io/traefik/operations/api/#dashboard

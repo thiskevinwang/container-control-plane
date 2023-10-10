@@ -23,7 +23,7 @@ job "grafana" {
     }
 
     service {
-      name     = "grafana"
+      name     = "grafana-nomad-service"
       port     = "graf"
       provider = "nomad"
 
@@ -44,7 +44,7 @@ job "grafana" {
 
       config {
         # https://hub.docker.com/r/grafana/grafana/tags
-        image = "grafana/grafana:9.5.12"
+        image = "grafana/grafana:10.1.4"
         ports = ["graf"]
 
         // https://github.com/grafana/grafana/blob/main/conf/sample.ini#L555

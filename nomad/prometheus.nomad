@@ -22,7 +22,7 @@ job "prometheus" {
     }
 
     service {
-      name     = "prometheus"
+      name     = "prometheus-nomad-service"
       port     = "prom"
       provider = "nomad"
 

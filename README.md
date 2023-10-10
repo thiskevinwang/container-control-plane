@@ -55,6 +55,11 @@ nomad run ./nomad/prometheus.nomad
 nomad run ./nomad/grafana.nomad
 ```
 
+> [!NOTE]
+>
+> admin user is not created on start up.
+> https://github.com/grafana/grafana/issues/12638
+
 #### Postgres
 
 ```bash
