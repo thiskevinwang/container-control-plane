@@ -115,21 +115,30 @@ resource "aws_instance" "nomad-leader" {
 # Outputs #
 ###########
 
+
+
+
+
 output "nomad_acl_bootstrap_reminder" {
   value       = <<EOT
-# Reminder to bootstrap ACLs on initial launch
-nomad acl bootstrap -json
+
+################################################
+# Reminder to bootstrap ACLs on initial launch #
+################################################
+
+export NOMAD_ADDR=http://${aws_instance.nomad-leader.public_ip}:4646
+
 export NOMAD_TOKEN=$(nomad acl bootstrap -json | jq -r '.SecretID')
+
+export NOMAD_VAR_token_for_traefik=$NOMAD_TOKEN
+
+
+######################
+# SSH Helper command #
+######################
+
+ssh -i ~/Downloads/test.pem ec2-user@${aws_instance.nomad-leader.public_dns}
+
 EOT
   description = "convenience command to bootstrap ACLs"
-}
-
-output "nomad_addr_cmd" {
-  value       = "export NOMAD_ADDR=http://${aws_instance.nomad-leader.public_ip}:4646"
-  description = "convenience command to set NOMAD_ADDR"
-}
-
-output "ssh_cmd" {
-  value       = "ssh -i ~/Downloads/test.pem ec2-user@${aws_instance.nomad-leader.public_dns}"
-  description = "convenience command to ssh into the instance"
 }
