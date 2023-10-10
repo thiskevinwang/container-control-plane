@@ -44,10 +44,22 @@ job "traefik" {
       // https://community.traefik.io/t/how-to-redirect-to-the-dashboard-from-a-url/4082/6
       tags = [
         "traefik.enable=true",
+
         # route traefik.thekevinwang.com
-        "traefik.http.routers.dashboard.entrypoints=http,https",
+        # https://stackoverflow.com/a/74668235/9823455
+        # Redirect http://traefik.thekevinwang.com to https
+        "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https",
+        "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true",
+        "traefik.http.routers.dashboard.middlewares=redirect-to-https",
+
+        "traefik.http.routers.dashboard.entrypoints=http",
         "traefik.http.routers.dashboard.rule=Host(`traefik.thekevinwang.com`)",
-        "traefik.http.routers.dashboard.service=api@internal",
+
+        "traefik.http.routers.dashboard-secure.entrypoints=https",
+        "traefik.http.routers.dashboard-secure.rule=Host(`traefik.thekevinwang.com`)",
+        "traefik.http.routers.dashboard-secure.tls=true", 
+        "traefik.http.routers.dashboard-secure.tls.certresolver=myresolver",
+        "traefik.http.routers.dashboard-secure.service=api@internal",
 
         # route /metrics
         "traefik.http.routers.metrics.entrypoints=http,https",
@@ -60,7 +72,7 @@ job "traefik" {
         "traefik.http.routers.nomad.entrypoints=http,https",
         "traefik.http.routers.nomad.rule=Host(`nomad.thekevinwang.com`)",
         "traefik.http.routers.nomad.service=nomad@nomad",
-        "traefik.http.services.nomad.loadbalancer.server.port=4646"
+        "traefik.http.services.nomad.loadbalancer.server.port=4646",
       ]
     }
 
@@ -76,11 +88,19 @@ job "traefik" {
           "db",
           "traefik",
         ]
-        volumes = ["local/traefik.toml:/etc/traefik/traefik.toml"]
+        volumes = [
+          "local/traefik.toml:/etc/traefik/traefik.toml",
+          "local/acme.json:/acme.json",
+        ]
       }
 
       env {
         I_GUESS_THIS_IS_NOT_THE_WORST = var.token_for_traefik
+      }
+
+      template {
+        data = file("./nomad/acme.json")
+        destination = "local/acme.json"
       }
 
       # https://doc.traefik.io/traefik/getting-started/configuration-overview/#configuration-file
@@ -97,6 +117,14 @@ job "traefik" {
     address = ":8080"
   [entryPoints.db]
     address = ":5432"
+
+[certificatesResolvers.myresolver.acme]
+  email = "kwangsan@gmail.com"
+  storage = "acme.json"
+  [certificatesResolvers.myresolver.acme.httpChallenge]
+    # used during the challenge
+    entryPoint = "web"
+  [certificatesResolvers.myresolver.acme.tlsChallenge]
 
 [metrics]
   [metrics.prometheus]
