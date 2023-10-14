@@ -4,9 +4,12 @@
 
 ## What is this?
 
-This is a small side project that consist of several infrastructure-as-code tools. [Packer][packer] for machine
+This is a small project that consist of several infrastructure-as-code tools. [Packer][packer] for machine
 images as code, [Terraform][terraform] for infrastructure-as-code, and [Nomad][nomad] for containerized jobs
 as code.
+
+I am working towards make this fully portable to anyone else with an AWS account, but for now, it makes 
+some assumptions, like assuming a Route53 hosted zone exists, and there are a few hard coded values.
 
 There are some additional AWS _glue scripts_ that I have yet to find a "best" place for.
 
@@ -83,6 +86,8 @@ nomad run ./nomad/prometheus.nomad
 ```bash
 nomad run ./nomad/grafana.nomad
 ```
+
+- https://grafana.com/grafana/dashboards/4475-traefik/
 
 > [!NOTE]
 >
