@@ -8,10 +8,10 @@ This is a small project that consist of several infrastructure-as-code tools. [P
 images as code, [Terraform][terraform] for infrastructure-as-code, and [Nomad][nomad] for containerized jobs
 as code.
 
-I am working towards make this fully portable to anyone else with an AWS account, but for now, it makes 
-some assumptions, like assuming a Route53 hosted zone exists, and there are a few hard coded values.
+I am working towards make this fully portable to anyone else with an AWS account, but for now, it makes
+some assumptions, like assuming a Route53 hosted zone exists, and there are a few hard coded values that have yet to be converted to variables.
 
-There are some additional AWS _glue scripts_ that I have yet to find a "best" place for.
+There are also some additional AWS _glue scripts_ that I have yet to find a "best" place for.
 
 ### Overview
 
@@ -21,13 +21,12 @@ There are three main folders:
 - [`/terraform`](./terraform/) - For quick spin up and tear down of and EC2 instance, mostly to avoid wasted money.
 - [`/nomad`](./nomad/) - For quick iteration and running of Nomad jobs, assuming a Nomad instance is ready.
 
-
 ## Prerequisites
 
 - [`packer`][packer] CLI
 - [`terraform`][terraform] CLI
 - [`nomad`][nomad] CLI
-- [`aws`][https://aws.amazon.com/cli/] CLI
+- [`aws`](https://aws.amazon.com/cli/) CLI
 - AWS Credentials; used by `packer` and `terraform` and `aws`
 - A `./nomad/acme.json` file, for TLS support
   > [!WARNING]
@@ -55,11 +54,6 @@ packer/build.sh
 Start an EC2 instance with nomad running.
 
 ```bash
-pushd terraform
-terraform apply
-popd
-
-# or
 terraform -chdir ./terraform apply
 ```
 
@@ -108,9 +102,7 @@ nomad run ./nomad/postgres.nomad
 ### AWS Route53
 
 ```bash
-aws route53 change-resource-record-sets \
- --hosted-zone-id $HOSTED_ZONE_ID \
- --change-batch file://./route53.json
+aws/route53.sh
 ```
 
 [packer]: https://developer.hashicorp.com/packer

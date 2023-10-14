@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "myresolver": {
+      "type": "object",
+      "properties": {
+        "Account": {
+          "type": "object",
+          "properties": {
+            "Email": {
+              "type": "string",
+              "format": "email"
+            },
+            "Registration": {
+              "type": "object",
+              "properties": {
+                "body": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "contact": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": ["status", "contact"]
+                },
+                "uri": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              },
+              "required": ["body", "uri"]
+            },
+            "PrivateKey": {
+              "type": "string"
+            },
+            "KeyType": {
+              "type": "string"
+            }
+          },
+          "required": ["Email", "Registration", "PrivateKey", "KeyType"]
+        },
+        "Certificates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "domain": {
+                "type": "object",
+                "properties": {
+                  "main": {
+                    "type": "string"
+                  }
+                },
+                "required": ["main"]
+              },
+              "certificate": {
+                "type": "string"
+              },
+              "key": {
+                "type": "string"
+              },
+              "Store": {
+                "type": "string"
+              }
+            },
+            "required": ["domain", "certificate", "key", "Store"]
+          }
+        }
+      },
+      "required": ["Account", "Certificates"]
+    }
+  },
+  "required": ["myresolver"]
+}
