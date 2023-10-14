@@ -36,6 +36,19 @@ build {
     ]
   }
 
+  # install certbot
+  # https://unix.stackexchange.com/a/754933/493226
+  # This is technically not needed since Traefik
+  # has built-in support for Let's Encrypt
+  provisioner "shell" {
+    inline = [
+      "sudo dnf install -y augeas-libs",
+      "sudo python3 -m venv /opt/certbot/",
+      "sudo /opt/certbot/bin/pip install --upgrade pip",
+      "sudo /opt/certbot/bin/pip install certbot certbot-apache",
+      "sudo ln -s /opt/certbot/bin/certbot /usr/bin/certbot",
+    ]
+  }
 
 
   # multiline script in packer - https://stackoverflow.com/a/68216479

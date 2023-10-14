@@ -1,7 +1,7 @@
 variable "hostname" {
-  description = "Hostname to detect and route to the postgres service"
+  description = "($NOMAD_VAR_hostname) Hostname to detect and route to the postgres service"
   type        = string
-  default     = "prometheus.thekevinwang.com"
+  default     = "prometheus.svc.thekevinwang.com"
 }
 
 job "prometheus" {
@@ -28,16 +28,16 @@ job "prometheus" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.prometheus.entrypoints=http,https",
-        "traefik.http.routers.prometheus.rule=Host(`prometheus.thekevinwang.com`)",
-        // "traefik.http.routers.metrics.entryPoints=metrics",
-        // "traefik.http.routers.metrics.rule=PathPrefix(`/metrics`)",
-        // "traefik.http.routers.metrics.rule=Host(`foo.bar`)"
-        // "traefik.http.routers.metrics.tls=true"
-        // "traefik.http.routers.metrics.tls.certResolver=sec"
-        // "traefik.http.routers.metrics.service=prometheus"
-        // "traefik.http.routers.metrics.middlewares=myauth"
-        // "traefik.http.services.metrics.loadbalancer.server.port=8082"
+        // middleware
+        "traefik.http.routers.prometheus.middlewares=redirect-to-https",
+        // http
+        "traefik.http.routers.prometheus.entrypoints=http",
+        "traefik.http.routers.prometheus.rule=Host(`${var.hostname}`)",
+        // https
+        "traefik.http.routers.prometheus-secure.entrypoints=https",
+        "traefik.http.routers.prometheus-secure.rule=Host(`${var.hostname}`)",
+        "traefik.http.routers.prometheus-secure.tls=true",
+        "traefik.http.routers.prometheus-secure.tls.certresolver=myresolver",
       ]
     }
 
@@ -88,6 +88,11 @@ scrape_configs:
       - targets: [
           "{{ env "attr.unique.network.ip-address" }}:8080",
         ]
+  - job_name: "traefik-https"
+    metrics_path: "/metrics"
+    scheme: "https"
+    static_configs:
+      - targets: ["traefik.thekevinwang.com"]
 EOT
       }
     }

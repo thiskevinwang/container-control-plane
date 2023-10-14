@@ -1,3 +1,9 @@
+variable "hostname" {
+  description = "($NOMAD_VAR_hostname) Hostname to detect and route to this service"
+  type        = string
+  default     = "whoami.svc.thekevinwang.com"
+}
+
 job "whoami" {
   datacenters = ["dc1"]
 
@@ -15,34 +21,29 @@ job "whoami" {
     }
 
     service {
-      name     = "whoami-demo"
+      name     = "whoami-nomad-service"
       port     = "http"
       provider = "nomad"
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.whoami-demo.entrypoints=http,https",
-        "traefik.http.routers.whoami-demo.rule=Host(`nomad.thekevinwang.com`)",
-        "traefik.http.routers.whoami-demo.rule=Path(`/whoami`)",
-        # "traefik.http.routers.whoami-demo.service=whoami-demo",
-        # "traefik.http.services.whoami-demo.loadbalancer.server.scheme=https",
-        # "traefik.http.services.whoami-demo.loadbalancer.server.port=${NOMAD_PORT_http}",
-        # "traefik.http.services.whoami-demo.loadbalancer.server.host=host.docker.internal",
-        # "traefik.http.services.whoami-demo.loadbalancer.server.port=24663",
-        # "traefik.http.middlewares.test-redirectregex.redirectregex.regex=^http://localhost/(.*)",
-        # "traefik.http.middlewares.test-redirectregex.redirectregex.replacement=http://host.docker.internal/$${1}",
+        // middleware
+        "traefik.http.routers.whoami.middlewares=redirect-to-https",
+        // http
+        "traefik.http.routers.whoami.entrypoints=http",
+        "traefik.http.routers.whoami.rule=Host(`${var.hostname}`)",
+        // https
+        "traefik.http.routers.whoami-secure.entrypoints=https",
+        "traefik.http.routers.whoami-secure.rule=Host(`${var.hostname}`)",
+        "traefik.http.routers.whoami-secure.tls=true",
+        "traefik.http.routers.whoami-secure.tls.certresolver=myresolver",
       ]
     }
 
-    task "server" {
-      env {
-        WHOAMI_PORT_NUMBER = NOMAD_PORT_http
-      }
-
+    task "whoami" {
       driver = "docker"
 
       config {
-        # network_mode = "bridge"
         image = "traefik/whoami"
         ports = ["http"]
       }
