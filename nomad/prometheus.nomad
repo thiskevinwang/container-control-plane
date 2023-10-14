@@ -88,6 +88,11 @@ scrape_configs:
       - targets: [
           "{{ env "attr.unique.network.ip-address" }}:8080",
         ]
+  - job_name: "traefik-https"
+    metrics_path: "/metrics"
+    scheme: "https"
+    static_configs:
+      - targets: ["traefik.thekevinwang.com"]
 EOT
       }
     }
