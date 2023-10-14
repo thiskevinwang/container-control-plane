@@ -22,25 +22,7 @@
     {
       "Action": "UPSERT",
       "ResourceRecordSet": {
-        "Name": "postgres.thekevinwang.com",
-        "Type": "A",
-        "TTL": 300,
-        "ResourceRecords": [{ "Value": "0.0.0.0" }]
-      }
-    },
-    {
-      "Action": "UPSERT",
-      "ResourceRecordSet": {
-        "Name": "prometheus.thekevinwang.com",
-        "Type": "A",
-        "TTL": 300,
-        "ResourceRecords": [{ "Value": "0.0.0.0" }]
-      }
-    },
-    {
-      "Action": "UPSERT",
-      "ResourceRecordSet": {
-        "Name": "grafana.thekevinwang.com",
+        "Name": "*.svc.thekevinwang.com",
         "Type": "A",
         "TTL": 300,
         "ResourceRecords": [{ "Value": "0.0.0.0" }]

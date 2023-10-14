@@ -1,7 +1,7 @@
 variable "hostname" {
-  description = "Hostname to detect and route to this service"
+  description = "($NOMAD_VAR_hostname) Hostname to detect and route to this service"
   type        = string
-  default     = "grafana.thekevinwang.com"
+  default     = "grafana.svc.thekevinwang.com"
 }
 
 job "grafana" {
@@ -30,8 +30,16 @@ job "grafana" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.grafana.entrypoints=http,https",
-        "traefik.http.routers.grafana.rule=Host(`grafana.thekevinwang.com`)",
+        // middleware
+        "traefik.http.routers.grafana.middlewares=redirect-to-https",
+        // http
+        "traefik.http.routers.grafana.entrypoints=http",
+        "traefik.http.routers.grafana.rule=Host(`${var.hostname}`)",
+        // https
+        "traefik.http.routers.grafana-secure.entrypoints=https",
+        "traefik.http.routers.grafana-secure.rule=Host(`${var.hostname}`)",
+        "traefik.http.routers.grafana-secure.tls=true",
+        "traefik.http.routers.grafana-secure.tls.certresolver=myresolver",
       ]
     }
 
