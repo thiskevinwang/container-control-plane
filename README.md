@@ -1,6 +1,6 @@
 # Container Control Plane
 
-![trifecta](https://github.com/thiskevinwang/traefik-test/assets/26389321/3113eef7-1d4f-40ba-8a19-6ea54b3f88d6)
+![CleanShot 2023-10-14 at 01 08 35@2x](https://github.com/thiskevinwang/container-control-plane/assets/26389321/e8b2838f-1e6a-4c3c-a567-674694d0fd16)
 
 ## What is this?
 
