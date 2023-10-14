@@ -50,11 +50,12 @@ job "traefik" {
         # Redirect http://traefik.thekevinwang.com to https
         "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https",
         "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true",
+        // dashboard middleware
         "traefik.http.routers.dashboard.middlewares=redirect-to-https",
-
+        // dashboard http
         "traefik.http.routers.dashboard.entrypoints=http",
         "traefik.http.routers.dashboard.rule=Host(`traefik.thekevinwang.com`)",
-
+        // daashboard https
         "traefik.http.routers.dashboard-secure.entrypoints=https",
         "traefik.http.routers.dashboard-secure.rule=Host(`traefik.thekevinwang.com`)",
         "traefik.http.routers.dashboard-secure.tls=true", 
@@ -62,17 +63,30 @@ job "traefik" {
         "traefik.http.routers.dashboard-secure.service=api@internal",
 
         # route /metrics
-        "traefik.http.routers.metrics.entrypoints=http,https",
-        "traefik.http.routers.metrics.rule=Host(`traefik.thekevinwang.com`) && PathPrefix(`/metrics`)",
-        // Warning: must use one .rule tag.
-        // ❌ "traefik.http.routers.metrics.rule=PathPrefix(`/metrics`)",
-        "traefik.http.routers.metrics.service=prometheus@internal",
+        // middleware
+        "traefik.http.routers.metrics.middlewares=redirect-to-https",
+        // http
+        "traefik.http.routers.metrics.entrypoints=http",
+        "traefik.http.routers.metrics.rule=Host(`traefik.thekevinwang.com`) && PathPrefix(`/metrics`)", // Warning: must use one .rule tag.
+        // https
+        "traefik.http.routers.metrics-secure.entrypoints=https", 
+        "traefik.http.routers.metrics-secure.rule=Host(`traefik.thekevinwang.com`) && PathPrefix(`/metrics`)", // Warning: must use one .rule tag.
+        "traefik.http.routers.metrics-secure.tls=true",
+        "traefik.http.routers.metrics-secure.tls.certresolver=myresolver",
+        "traefik.http.routers.metrics-secure.service=prometheus@internal",
 
         # route nomad.thekevinwang.com
-        "traefik.http.routers.nomad.entrypoints=http,https",
+        // nomad middleware
+        "traefik.http.routers.nomad.middlewares=redirect-to-https",
+        // nomad http
+        "traefik.http.routers.nomad.entrypoints=http",
         "traefik.http.routers.nomad.rule=Host(`nomad.thekevinwang.com`)",
-        "traefik.http.routers.nomad.service=nomad@nomad",
-        "traefik.http.services.nomad.loadbalancer.server.port=4646",
+        // nomad https
+        "traefik.http.routers.nomad-secure.entrypoints=https",
+        "traefik.http.routers.nomad-secure.rule=Host(`nomad.thekevinwang.com`)",
+        "traefik.http.routers.nomad-secure.tls=true", 
+        "traefik.http.routers.nomad-secure.tls.certresolver=myresolver",
+        "traefik.http.services.nomad-secure.loadbalancer.server.port=4646",
       ]
     }
 
@@ -101,6 +115,7 @@ job "traefik" {
       template {
         data = file("./nomad/acme.json")
         destination = "local/acme.json"
+        perms = "600"
       }
 
       # https://doc.traefik.io/traefik/getting-started/configuration-overview/#configuration-file
