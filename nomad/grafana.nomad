@@ -52,7 +52,7 @@ job "grafana" {
 
       config {
         # https://hub.docker.com/r/grafana/grafana/tags
-        image = "grafana/grafana:10.1.4"
+        image = "grafana/grafana:10.1.5"
         ports = ["graf"]
 
         // https://github.com/grafana/grafana/blob/main/conf/sample.ini#L555
