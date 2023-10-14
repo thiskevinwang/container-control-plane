@@ -4,6 +4,11 @@
 
 ## What is this?
 
+This is a small side project that consist of several infrastructure-as-code tools. [Packer][packer] for machine
+images as code, [Terraform][terraform] for infrastructure-as-code, and [Nomad][nomad] for containerized jobs
+as code.
+
+There are some additional AWS _glue scripts_ that I have yet to find a "best" place for.
 
 ### Overview
 
@@ -21,7 +26,7 @@ There are three main folders:
 - [`nomad`][nomad] CLI
 - [`aws`][https://aws.amazon.com/cli/] CLI
 - AWS Credentials; used by `packer` and `terraform` and `aws`
-- A `./nomad/acme.json` file.
+- A `./nomad/acme.json` file, for TLS support
   > [!WARNING]
   >
   > Annecdotally, this file poses a bit of a 🐔/🥚 scenario. I'm not sure if nomad `template` references
